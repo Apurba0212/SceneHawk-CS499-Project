@@ -35,3 +35,8 @@ models/
 # Raw LLM replies. They quote reviews, so they are not ours to redistribute.
 # The labels from them are in eval/preds/, and are committed.
 eval/llm_raw/
+
+# Per-review and per-film model scores from scripts/12_score_reviews.py
+# (~10 MB per model version). They live in Supabase (film_feelings) and in
+# Google Drive; regenerate them by running the script again.
+data/feelings/

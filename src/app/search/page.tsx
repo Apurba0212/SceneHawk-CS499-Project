@@ -1,6 +1,15 @@
 import Link from "next/link";
 import MatchCard from "@/components/MatchCard";
 import SearchBox from "@/components/SearchBox";
+import {
+  Card,
+  Em,
+  Label,
+  Notice,
+  PageHeader,
+  Tag,
+  pillClass,
+} from "@/components/ui";
 import { getFilmRepository } from "@/lib/data";
 import { buildAgentContext, runSearch } from "@/lib/pipelines";
 import {
@@ -23,9 +32,9 @@ const STARTERS = [
 function Chip({ label, values }: { label: string; values: string[] }) {
   if (!values.length) return null;
   return (
-    <span className="rounded-full border border-[#3a372f] px-3 py-1 text-xs text-[#b7b2a7]">
-      <span className="text-[#8f8b82]">{label}:</span> {values.join(", ")}
-    </span>
+    <Tag>
+      <span className="mr-1 text-fg-faint">{label}</span> {values.join(", ")}
+    </Tag>
   );
 }
 
@@ -45,35 +54,34 @@ export default async function SearchPage({
   const i = result?.interpretation;
 
   return (
-    <div className="pt-12">
-      <div className="max-w-2xl mx-auto">
-        {!q && (
-          <div className="mb-10 text-center">
-            <p className="text-[11px] tracking-[0.35em] uppercase text-[#e0632f] mb-4">
-              Discover
-            </p>
-            <h1 className="font-display text-3xl md:text-4xl mb-3">
-              What are you in the <em className="text-[#e0632f]">mood</em> for?
-            </h1>
-            <p className="text-sm text-[#8f8b82] mb-6">
-              Describe the experience — not the genre.
-            </p>
-          </div>
-        )}
-        <SearchBox initial={q} mode={mode} />
+    <div>
+      {!q ? (
+        <PageHeader
+          center
+          title={
+            <>
+              Search films by <Em>mood</Em>
+            </>
+          }
+          lead={`Describe the experience you want, not the genre. Results come from ${films.length} analyzed films.`}
+        />
+      ) : (
+        <div className="pt-10" />
+      )}
+
+      <div className="mx-auto max-w-3xl">
+        <SearchBox initial={q} mode={mode} autoFocus={!q} />
       </div>
 
       {!q && (
-        <div className="mt-10 max-w-2xl mx-auto">
-          <p className="mb-3 text-center text-[10px] uppercase tracking-[0.25em] text-[#8f8b82]">
-            Try asking
-          </p>
+        <div className="mx-auto mt-10 max-w-3xl">
+          <Label className="mb-3 text-center">Example searches</Label>
           <div className="flex flex-wrap justify-center gap-2">
             {STARTERS.map((s) => (
               <Link
                 key={s}
                 href={`/search?q=${encodeURIComponent(s)}&mode=multi`}
-                className="rounded-full border border-[#2a2825] bg-[#141315] px-4 py-2 text-xs text-[#b7b2a7] hover:border-[#e0632f] hover:text-[#e0632f] transition-colors"
+                className={pillClass()}
               >
                 {s}
               </Link>
@@ -82,39 +90,42 @@ export default async function SearchPage({
         </div>
       )}
 
-      {/* System selector — this is the research comparison */}
-      {q && (
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
-          {PIPELINE_MODES.map((m) => (
-            <Link
-              key={m}
-              href={`/search?q=${encodeURIComponent(q)}&mode=${m}`}
-              className={`rounded-full px-4 py-1.5 text-xs border transition-colors ${
-                m === mode
-                  ? "border-[#e0632f] text-[#e0632f]"
-                  : "border-[#2a2825] text-[#8f8b82] hover:text-[#b7b2a7]"
-              }`}
-            >
-              {PIPELINE_LABELS[m]}
-            </Link>
-          ))}
-        </div>
-      )}
-
       {result && (
-        <>
+        <div className="mx-auto mt-8 max-w-3xl">
+          {/* System selector — this is the research comparison */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <Label>System</Label>
+            <nav
+              aria-label="Recommendation system"
+              className="flex flex-wrap gap-1 rounded-lg border border-line bg-surface p-1"
+            >
+              {PIPELINE_MODES.map((m) => (
+                <Link
+                  key={m}
+                  aria-current={m === mode ? "page" : undefined}
+                  href={`/search?q=${encodeURIComponent(q)}&mode=${m}`}
+                  className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
+                    m === mode
+                      ? "bg-surface-3 text-fg"
+                      : "text-fg-subtle hover:text-fg"
+                  }`}
+                >
+                  {PIPELINE_LABELS[m]}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
           {result.note && (
-            <p className="mx-auto mt-6 max-w-2xl rounded-lg border border-[#3a3327] bg-[#1c1713] px-4 py-3 text-xs text-[#d4a06a]">
-              {result.note}
-            </p>
+            <div className="mt-6">
+              <Notice>{result.note}</Notice>
+            </div>
           )}
 
           {i && (i.source === "llm" || mode === "multi" || mode === "rag") && (
-            <div className="mx-auto mt-6 max-w-3xl">
-              <p className="mb-2 text-[10px] uppercase tracking-[0.25em] text-[#8f8b82]">
-                Interpreted as · {i.source}
-              </p>
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-6 rounded-xl border border-line bg-surface/60 p-4">
+              <Label className="mb-3">Interpreted as · {i.source}</Label>
+              <div className="flex flex-wrap gap-1.5">
                 <Chip label="themes" values={i.themes} />
                 <Chip label="mood" values={i.mood} />
                 <Chip label="pacing" values={i.pacing} />
@@ -122,30 +133,30 @@ export default async function SearchPage({
                 <Chip label="visual" values={i.visual} />
                 <Chip label="avoid" values={i.avoid} />
                 <Chip label="genres" values={i.genres} />
-                {i.preferObscure && (
-                  <span className="rounded-full border border-[#3a3327] px-3 py-1 text-xs text-[#d4a06a]">
-                    prefer: lesser-known
-                  </span>
-                )}
+                {i.preferObscure && <Tag tone="warn">prefer: lesser-known</Tag>}
               </div>
             </div>
           )}
 
-          <div className="mx-auto mt-10 max-w-3xl space-y-4">
-            <p className="text-[10px] uppercase tracking-[0.25em] text-[#8f8b82]">
-              Your cinematic matches — {PIPELINE_LABELS[mode]}
-            </p>
+          <div className="mt-10 space-y-3">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-2xl">Matching films</h2>
+              <span className="shrink-0 text-xs text-fg-faint">
+                {result.results.length} result
+                {result.results.length === 1 ? "" : "s"}
+              </span>
+            </div>
             {result.results.length === 0 && (
-              <p className="rounded-lg border border-[#2a2825] bg-[#141315] p-6 text-sm text-[#8f8b82]">
-                No matches surfaced. Try different descriptors — mood,
-                pacing, themes, visual style — or switch systems above.
-              </p>
+              <Card className="p-6 text-sm text-fg-subtle">
+                No films matched. Describe the mood, pacing, themes or visual
+                style in other words, or switch to another system above.
+              </Card>
             )}
-            {result.results.map((s) => (
-              <MatchCard key={s.film.id} score={s} />
+            {result.results.map((s, idx) => (
+              <MatchCard key={s.film.id} score={s} rank={idx + 1} />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -311,3 +311,23 @@ predictions came from.
 
 Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011).
 *Learning Word Vectors for Sentiment Analysis.* ACL-HLT 2011, 142-150.
+
+## Week 5-6 - the feelings and description tables
+
+Run `db/migrations/2026-11-06_search.sql` in the Supabase SQL editor once
+first. It adds the description search index, the `match_films()` function
+the website calls, and row level security.
+
+    python scripts/13_build_descriptions.py    # film_keywords, seconds, no GPU
+    # notebooks/fill_feelings_table.ipynb in Colab, which runs:
+    python scripts/12_score_reviews.py --model <saved model folder>
+
+Step 12 needs `torch` and `transformers` (Colab has both) and a GPU to be
+quick. It scores every review in `reviews`, averages per film, and replaces
+each scored film's rows in `film_feelings`, stamping `model_version` with the
+model folder's name. Per-review scores are cached in `data/feelings/`, so a
+stopped run resumes. `--dry-run` scores without writing; `--reviews
+data/reviews.jsonl --limit 200` is a quick local test.
+
+It works with any saved version of the model, so the table can be filled now
+with the first model and refilled after each retrain.

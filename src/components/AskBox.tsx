@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { buttonClass, inputClass } from "@/components/ui";
 
 interface AskResponse {
   answer: string;
@@ -11,6 +12,7 @@ interface AskResponse {
 export default function AskBox({ filmId }: { filmId: string }) {
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [responses, setResponses] = useState<
     { q: string; r: AskResponse }[]
   >([]);
@@ -18,57 +20,74 @@ export default function AskBox({ filmId }: { filmId: string }) {
   async function ask(e: React.FormEvent) {
     e.preventDefault();
     const question = q.trim();
-    if (!question) return;
+    if (!question || loading) return;
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch(`/api/films/${filmId}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
       });
+      if (!res.ok) throw new Error(String(res.status));
       const r = (await res.json()) as AskResponse;
       setResponses((prev) => [{ q: question, r }, ...prev]);
       setQ("");
+    } catch {
+      setError("The answer didn’t load. Check your connection and ask again.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="rounded-xl border border-[#2a2825] bg-[#141315] p-6">
-      <form onSubmit={ask} className="flex flex-col sm:flex-row gap-3">
+    <div className="rounded-xl border border-line bg-surface p-5 sm:p-6">
+      <form onSubmit={ask} className="flex flex-col gap-3 sm:flex-row">
+        <label htmlFor={`ask-${filmId}`} className="sr-only">
+          Your question about this film
+        </label>
         <input
+          id={`ask-${filmId}`}
+          name="question"
+          autoComplete="off"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder='e.g. "Why does this feel unsettling?" or "How does the cinematography build tension?"'
-          className="flex-1 rounded-lg border border-[#2a2825] bg-[#0a0a0a] px-4 py-3 text-sm placeholder:text-[#6b675f] focus:border-[#e0632f] focus:outline-none"
+          placeholder="Why does this feel unsettling…"
+          className={`${inputClass} flex-1 bg-canvas`}
         />
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-[#e0632f] px-6 py-3 text-sm font-semibold text-black hover:bg-[#ea7443] disabled:opacity-50 transition-colors"
+          className={buttonClass("primary")}
         >
-          {loading ? "…" : "Ask"}
+          {loading ? "Asking…" : "Ask"}
         </button>
       </form>
 
-      {responses.length > 0 && (
-        <div className="mt-5 space-y-4">
-          {responses.map(({ q, r }, idx) => (
-            <div key={idx} className="border-t border-[#2a2825] pt-4">
-              <p className="text-sm text-[#8f8b82]">Q: {q}</p>
-              <p className="mt-2 text-sm leading-relaxed text-[#ece7df]">
-                {r.answer}
-              </p>
-              {r.dimension && (
-                <p className="mt-2 text-[10px] uppercase tracking-wider text-[#8f8b82]">
-                  grounded in: {r.dimension} analysis · {r.source}
+      <div aria-live="polite">
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-warn">
+            {error}
+          </p>
+        )}
+        {responses.length > 0 && (
+          <div className="mt-5 space-y-4">
+            {responses.map(({ q, r }, idx) => (
+              <div key={responses.length - idx} className="border-t border-line pt-4">
+                <p className="break-words text-sm text-fg-subtle">{q}</p>
+                <p className="mt-2 text-sm leading-relaxed text-fg">
+                  {r.answer}
                 </p>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+                {r.dimension && (
+                  <p className="mt-2 text-xs text-fg-faint">
+                    Based on the {r.dimension} analysis · {r.source}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Card, Tag } from "@/components/ui";
 import type { Dimension, FilmScore } from "@/lib/types";
 
 const DIM_LABEL: Record<string, string> = {
@@ -9,55 +9,66 @@ const DIM_LABEL: Record<string, string> = {
   characters: "Characters",
 };
 
-export default function MatchCard({ score }: { score: FilmScore }) {
+export default function MatchCard({
+  score,
+  rank,
+}: {
+  score: FilmScore;
+  rank?: number;
+}) {
   const m = score.film.metadata;
   const dims = Object.keys(score.dimensionScores) as Dimension[];
 
   return (
-    <Link
-      href={`/film/${score.film.id}`}
-      className="block rounded-xl border border-[#2a2825] bg-[#141315] p-6 hover:border-[#e0632f]/60 transition-colors"
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-display text-xl sm:text-2xl font-semibold">
-            {m.title}
-            <span className="ml-2 text-sm font-normal text-[#8f8b82]">
-              {m.year} · dir. {m.director}
-            </span>
-          </h3>
-          <p className="mt-1 text-xs uppercase tracking-wider text-[#8f8b82]">
-            {m.genres.join(" · ")}
-          </p>
-        </div>
-        <div className="text-right shrink-0">
-          <div className="text-2xl font-semibold text-[#e0632f]">
-            {score.displayScore}
+    <Card href={`/film/${score.film.id}`} className="p-5 sm:p-6">
+      <div className="flex items-start gap-4 sm:gap-5">
+        {rank !== undefined && (
+          <span className="hidden w-6 shrink-0 pt-1 font-display text-lg text-fg-faint sm:block">
+            {String(rank).padStart(2, "0")}
+          </span>
+        )}
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h3 className="break-words font-display text-xl font-semibold leading-snug transition-colors group-hover:text-accent sm:text-2xl">
+                {m.title}
+              </h3>
+              <p className="mt-1 text-sm text-fg-subtle">
+                {m.year} · dir. {m.director}
+                <span className="text-fg-faint"> · {m.genres.join(", ")}</span>
+              </p>
+            </div>
+
+            {/* Retrieval score — not a quality rating. Keep the label. */}
+            <div
+              className="shrink-0 rounded-lg border border-line bg-surface-2 px-3 py-2 text-center"
+              title="Retrieval score: how strongly this film's analysis matches your description. Not a quality rating."
+            >
+              <div className="text-xl font-semibold tabular-nums text-accent">
+                {score.displayScore}
+              </div>
+              <div className="text-[11px] text-fg-subtle">
+                Cinematic match
+              </div>
+            </div>
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-[#8f8b82]">
-            cinematic match
-          </div>
+
+          {dims.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {dims.map((d) => (
+                <Tag key={d}>{DIM_LABEL[d]}</Tag>
+              ))}
+            </div>
+          )}
+
+          {score.explanation && (
+            <p className="mt-4 text-sm leading-relaxed text-fg-muted">
+              {score.explanation}
+            </p>
+          )}
         </div>
       </div>
-
-      {dims.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {dims.map((d) => (
-            <span
-              key={d}
-              className="rounded-full border border-[#3a372f] px-2.5 py-0.5 text-[11px] text-[#b7b2a7]"
-            >
-              {DIM_LABEL[d]}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {score.explanation && (
-        <p className="mt-4 text-sm leading-relaxed text-[#b7b2a7]">
-          {score.explanation}
-        </p>
-      )}
-    </Link>
+    </Card>
   );
 }

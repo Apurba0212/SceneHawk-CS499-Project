@@ -1,23 +1,99 @@
 @import "tailwindcss";
 
+/*
+ * SceneHawk design tokens — the single source of truth for color + type.
+ * Use the generated utilities (bg-surface, text-fg-muted, border-line, …)
+ * instead of hard-coded hex values. See .claude/skills/scenehawk-design.
+ */
 @theme {
   --font-display: var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --color-ink: #0a0a0a;
-  --color-cream: #ece7df;
-  --color-faded: #8f8b82;
+
+  /* Surfaces (darkest → lightest) */
+  --color-canvas: #09090a;
+  --color-surface: #121113;
+  --color-surface-2: #19181a;
+  --color-surface-3: #222023;
+
+  /* Borders */
+  --color-line: #252321;
+  --color-line-strong: #38352f;
+
+  /* Text */
+  --color-fg: #ece7df;
+  --color-fg-muted: #b7b2a7;
+  --color-fg-subtle: #8f8b82;
+  --color-fg-faint: #6b675f;
+
+  /* Brand accent (projector orange) */
   --color-accent: #e0632f;
   --color-accent-hi: #ea7443;
-  --color-panel: #141315;
-  --color-line: #2a2825;
+  --color-accent-soft: rgb(224 99 47 / 0.12);
+
+  /* Notice / caution */
+  --color-warn: #d4a06a;
+  --color-warn-bg: #1c1713;
+  --color-warn-line: #3a3327;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  /* Keep anchored/focused content clear of the sticky header. */
+  scroll-padding-top: 6rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button,
+input,
+label {
+  touch-action: manipulation;
+}
+
+#main:focus {
+  outline: none;
 }
 
 body {
-  background: var(--color-ink);
-  color: var(--color-cream);
+  background: var(--color-canvas);
+  color: var(--color-fg);
   font-family: var(--font-sans);
 }
 
+/* Faint top-of-page projector glow — keeps the canvas from feeling flat. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 560px;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(
+    60% 100% at 50% 0%,
+    rgb(224 99 47 / 0.09),
+    transparent 70%
+  );
+}
+
 ::selection {
-  background: rgba(224, 99, 47, 0.35);
+  background: rgb(224 99 47 / 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  transition: outline-offset 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

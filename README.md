@@ -146,13 +146,13 @@ inflated. The method and the wider comparison are in
 | Piece | Status |
 | --- | --- |
 | Website (search, chat, film pages) | Built, deployed on Vercel |
-| Chat service | Removed, to be rebuilt on the feelings model |
+| Chat page | Answers from the feelings and description tables in Supabase (no separate server) |
 | Story matching on descriptions | Built |
 | Review collection and labeling | Done |
 | Feelings model | First version trained and tested, being improved |
-| Feelings table | Planned |
-| Genre filter, feeling match, combined scoring | Planned |
-| Results screen with scores and evidence | Planned |
+| Feelings table | Script and Colab notebook ready (`12_score_reviews.py`); fill after each retrain |
+| Genre filter, feeling match, combined scoring | Built (`match_films()` in Supabase) |
+| Results screen with scores and evidence | Built on the chat page |
 
 ### Timeline (Oct 12 – Dec 18)
 
@@ -183,7 +183,7 @@ shared notes, so design choices are grounded in prior work.
 | Layer | Tools |
 | --- | --- |
 | Website | Next.js, React, TypeScript, Tailwind CSS — hosted on Vercel |
-| Chat service | To be rebuilt; the old FastAPI and Chroma service was removed |
+| Chat backend | Supabase (Postgres function `match_films()`), called from the Next.js API route |
 | Story embeddings | OpenAI `text-embedding-3-small` |
 | Feelings model | Hugging Face Transformers, trained in Google Colab |
 | Film data | TMDB (titles, genres, descriptions, ratings) |

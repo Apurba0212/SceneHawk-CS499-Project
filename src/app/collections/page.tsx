@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Arrow, Card, Em, PageHeader } from "@/components/ui";
 import { getFilmRepository } from "@/lib/data";
 import type { Film } from "@/lib/types";
 
@@ -61,42 +62,55 @@ export default async function CollectionsPage() {
   const byId = new Map(catalog.map((f) => [f.id, f]));
 
   return (
-    <div className="pt-16">
-      <p className="text-[11px] tracking-[0.35em] uppercase text-[#e0632f] mb-4">
-        Collections
-      </p>
-      <h1 className="font-display text-4xl md:text-5xl mb-3">
-        Shelves by <em className="text-[#e0632f]">feeling.</em>
-      </h1>
-      <p className="text-[#8f8b82] max-w-xl mb-14 text-sm leading-relaxed">
-        Curated groupings by cinematic quality rather than genre — the same
-        idea the search engine uses, assembled by hand.
-      </p>
+    <div>
+      <PageHeader
+        title={
+          <>
+            Film collections by <Em>mood</Em>
+          </>
+        }
+        lead="Hand-picked groups of films that share a quality, not a genre. It is the same idea the search uses, put together by hand."
+      />
 
-      <div className="space-y-14">
-        {COLLECTIONS.map((c) => (
-          <section key={c.name}>
-            <h2 className="font-display text-2xl mb-1.5">{c.name}</h2>
-            <p className="text-sm text-[#8f8b82] mb-5">{c.desc}</p>
-            <div className="flex flex-wrap gap-3">
-              {c.ids
-                .map((id) => byId.get(id))
-                .filter((f): f is Film => !!f)
-                .map((f) => (
-                  <Link
-                    key={f.id}
-                    href={`/film/${f.id}`}
-                    className="rounded-full border border-[#2a2825] bg-[#141315] px-4 py-2 text-sm text-[#b7b2a7] hover:border-[#e0632f] hover:text-[#e0632f] transition-colors"
-                  >
-                    {f.metadata.title}
-                    <span className="ml-1.5 text-[#6b675f]">
-                      {f.metadata.year}
-                    </span>
-                  </Link>
+      <div className="grid gap-4 md:grid-cols-2">
+        {COLLECTIONS.map((c) => {
+          const items = c.ids
+            .map((id) => byId.get(id))
+            .filter((f): f is Film => !!f);
+          return (
+            <Card key={c.name} className="p-6">
+              <div className="flex items-baseline justify-between gap-4">
+                <h2 className="font-display text-2xl">{c.name}</h2>
+                <span className="shrink-0 text-xs text-fg-faint">
+                  {items.length} films
+                </span>
+              </div>
+              <p className="mt-1.5 text-sm leading-relaxed text-fg-subtle">
+                {c.desc}
+              </p>
+              <ul className="mt-5 divide-y divide-line border-t border-line">
+                {items.map((f) => (
+                  <li key={f.id}>
+                    <Link
+                      href={`/film/${f.id}`}
+                      className="group flex items-center justify-between gap-4 py-2.5 text-sm text-fg-muted transition-colors hover:text-accent"
+                    >
+                      <span>
+                        {f.metadata.title}
+                        <span className="ml-2 text-fg-faint">
+                          {f.metadata.year}
+                        </span>
+                      </span>
+                      <span className="text-fg-faint group-hover:text-accent">
+                        <Arrow />
+                      </span>
+                    </Link>
+                  </li>
                 ))}
-            </div>
-          </section>
-        ))}
+              </ul>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
