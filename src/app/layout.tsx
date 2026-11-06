@@ -1,16 +1,22 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import SiteNav from "@/components/SiteNav";
+import { containerClass } from "@/components/ui";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const fraunces = Fraunces({
   subsets: ["latin"],
   style: ["normal", "italic"],
-  variable: "--font-playfair",
+  weight: ["400", "500", "600"],
+  variable: "--font-fraunces",
 });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-jetbrains",
+});
 
 // Explicit override first, then Vercel's production domain, then local dev.
 const siteUrl =
@@ -36,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#09090a",
+  themeColor: "#0e0e0c",
   colorScheme: "dark",
 };
 
@@ -48,57 +54,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${inter.variable} ${mono.variable}`}
+    >
       <body className="flex min-h-screen flex-col antialiased">
         <a
           href="#main"
-          className="sr-only z-50 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-canvas focus:not-sr-only focus:fixed focus:left-4 focus:top-3"
+          className="sr-only z-50 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-canvas focus:not-sr-only focus:fixed focus:left-4 focus:top-3"
         >
           Skip to content
         </a>
-        <header className="sticky top-0 z-40 border-b border-line/70 bg-canvas/80 backdrop-blur-md">
-          <div className="mx-auto flex max-w-6xl flex-col gap-1 px-5 pb-2 pt-3 sm:h-16 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-0 md:px-8">
-            <Link
-              href="/"
-              aria-label="SceneHawk home"
-              className="h-10 shrink-0 self-start overflow-hidden sm:h-auto sm:self-auto"
-            >
-              <Image
-                src="/scenehawk.png"
-                alt="SceneHawk"
-                width={270}
-                height={180}
-                className="-my-4 h-[4.5rem] w-auto sm:-my-3"
-                priority
-              />
-            </Link>
-            <SiteNav />
-          </div>
-        </header>
+        <SiteNav />
 
-        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-5 pb-24 md:px-8">
+        <main id="main" tabIndex={-1} className="w-full flex-1">
           {children}
         </main>
 
         <footer className="border-t border-line">
-          <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-8 text-xs text-fg-faint sm:flex-row sm:items-center sm:justify-between md:px-8">
-            <p>
-              <span translate="no" className="font-display text-sm text-fg-muted">
-                SceneHawk
-              </span>{" "}
-              · Film search research prototype, MATE-CS2148
-            </p>
-            <div className="flex gap-5">
-              <Link href="/search" className="hover:text-fg-muted">
-                Search
-              </Link>
-              <Link href="/catalog" className="hover:text-fg-muted">
-                Analysis index
-              </Link>
-              <Link href="/#faq" className="hover:text-fg-muted">
-                FAQ
-              </Link>
-            </div>
+          <div
+            className={`${containerClass} flex flex-col gap-3 py-8 font-mono text-xs text-fg-faint sm:flex-row sm:items-center sm:justify-between`}
+          >
+            <span>SceneHawk prototype · CSCI 49900, Hunter College</span>
+            <span>Research project · not a commercial service</span>
           </div>
         </footer>
       </body>

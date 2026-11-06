@@ -1,5 +1,5 @@
 import ChatPanel from "@/components/ChatPanel";
-import { Em, PageHeader } from "@/components/ui";
+import { Container, Em, PageHeader } from "@/components/ui";
 
 export const metadata = { title: "Chat" };
 
@@ -9,7 +9,7 @@ export const metadata = { title: "Chat" };
 // pipelines over the curated 29-film corpus.
 export default function ChatPage() {
   return (
-    <div className="mx-auto max-w-3xl">
+    <Container className="max-w-[860px] pb-24">
       <PageHeader
         center
         title={
@@ -26,6 +26,6 @@ export default function ChatPage() {
         Answers come only from the films in our database, never invented. The
         feelings model is an early version, so scores are rough.
       </p>
-    </div>
+    </Container>
   );
 }

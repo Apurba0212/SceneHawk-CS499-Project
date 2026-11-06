@@ -42,13 +42,13 @@ export default function MatchCard({
 
             {/* Retrieval score — not a quality rating. Keep the label. */}
             <div
-              className="shrink-0 rounded-lg border border-line bg-surface-2 px-3 py-2 text-center"
+              className="shrink-0 text-right"
               title="Retrieval score: how strongly this film's analysis matches your description. Not a quality rating."
             >
-              <div className="text-xl font-semibold tabular-nums text-accent">
+              <div className="font-display text-[28px] leading-none tabular-nums text-accent">
                 {score.displayScore}
               </div>
-              <div className="text-[11px] text-fg-subtle">
+              <div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.08em] text-fg-faint">
                 Cinematic match
               </div>
             </div>

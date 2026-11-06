@@ -1,4 +1,4 @@
-import { Card, Em, PageHeader, Tag } from "@/components/ui";
+import { Card, Container, Em, PageHeader, Tag } from "@/components/ui";
 import { getFilmRepository } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export default async function CatalogPage() {
   const films = await getFilmRepository().listFilms();
 
   return (
-    <div>
+    <Container className="pb-24">
       <PageHeader
         title={
           <>
@@ -45,6 +45,6 @@ export default async function CatalogPage() {
           </Card>
         ))}
       </div>
-    </div>
+    </Container>
   );
 }
