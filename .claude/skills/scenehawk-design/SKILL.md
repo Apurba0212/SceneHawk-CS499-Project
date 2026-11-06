@@ -40,7 +40,10 @@ view. Don't color whole sections orange.
 - Page title: `font-display text-4xl md:text-5xl tracking-tight text-balance`,
   with at most one word wrapped in `<Em>` (italic accent), e.g.
   "Film collections by *mood*".
-- **No all-caps labels.** `<Eyebrow>` (accent) and `<Label>` (`fg-subtle`)
+- **Exception: the home hero.** The team chose to keep "Describe the film
+  you want to *feel.*" with its uppercase "Multi-agent film discovery" label
+  and the original intro. Don't rewrite it to follow the copy rules below.
+- **No all-caps labels** (elsewhere). `<Eyebrow>` (accent) and `<Label>` (`fg-subtle`)
   are sentence case, `text-sm font-medium`. Use an eyebrow only where it
   adds a fact (the film page's genres), not as decoration.
 - Body copy `text-sm`/`text-[15px]` with `leading-relaxed`.

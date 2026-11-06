@@ -11,6 +11,62 @@ interface RetrievedFilm {
   pool?: string;
   summary?: string;
   similarity?: number;
+  genres?: string[];
+  feelings?: Record<string, number>;
+  evidence?: string;
+  evidence_feeling?: string;
+  review_count?: number;
+  low_confidence?: boolean;
+}
+
+function FilmResult({ f }: { f: RetrievedFilm }) {
+  const feelings = Object.entries(f.feelings ?? {}).sort((a, b) => b[1] - a[1]);
+  return (
+    <li className="rounded-lg border border-line bg-canvas p-3">
+      <div className="flex items-start justify-between gap-3">
+        <p className="min-w-0 break-words text-sm font-medium text-fg">
+          {f.title}
+          {f.year ? <span className="font-normal text-fg-faint"> · {f.year}</span> : null}
+        </p>
+        {typeof f.similarity === "number" && (
+          <span
+            className="shrink-0 text-xs tabular-nums text-accent"
+            title="Retrieval score: how well the film's feeling and description scores fit your request. Not a quality rating."
+          >
+            match {Math.round(f.similarity * 100)}
+          </span>
+        )}
+      </div>
+      {feelings.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {feelings.map(([name, score]) => (
+            <span
+              key={name}
+              className="rounded-md border border-line-strong/70 bg-surface-2 px-2 py-0.5 text-[11px] leading-5 text-fg-muted"
+            >
+              {name} <span className="tabular-nums text-fg-faint">{score.toFixed(2)}</span>
+            </span>
+          ))}
+          {f.low_confidence && (
+            <span
+              className="rounded-md border border-warn-line bg-warn-bg px-2 py-0.5 text-[11px] leading-5 text-warn"
+              title="Scores come from only a few reviews."
+            >
+              low confidence{f.review_count ? ` · ${f.review_count} reviews` : ""}
+            </span>
+          )}
+        </div>
+      )}
+      {f.evidence && (
+        <p className="mt-2 text-xs leading-relaxed text-fg-subtle">
+          <span className="text-fg-faint">
+            From a review{f.evidence_feeling ? ` (${f.evidence_feeling})` : ""}:
+          </span>{" "}
+          “{f.evidence.trim()}{f.evidence.length >= 280 ? "…" : ""}”
+        </p>
+      )}
+    </li>
+  );
 }
 
 interface Turn {
@@ -23,7 +79,7 @@ const STARTERS = [
   "something cozy for a rainy Sunday",
   "a tense slow-burn that builds dread",
   "a melancholic film about loneliness",
-  "an underrated sci-fi that's more thoughtful than action",
+  "a hopeful sci-fi about first contact",
 ];
 
 export default function ChatPanel() {
@@ -124,22 +180,13 @@ export default function ChatPanel() {
                 {t.films && t.films.length > 0 && (
                   <div>
                     <p className="mb-2 text-xs font-medium text-fg-subtle">
-                      Films retrieved
+                      Matching films
                     </p>
-                    <div className="flex flex-wrap gap-1.5">
+                    <ul className="space-y-2">
                       {t.films.map((f, j) => (
-                        <span
-                          key={j}
-                          title={f.summary ?? ""}
-                          className="rounded-md border border-line-strong/70 bg-surface-2 px-2 py-0.5 text-[11px] leading-5 text-fg-muted"
-                        >
-                          {f.title}
-                          {f.year ? (
-                            <span className="text-fg-faint"> · {f.year}</span>
-                          ) : null}
-                        </span>
+                        <FilmResult key={j} f={f} />
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 )}
               </div>
@@ -150,7 +197,7 @@ export default function ChatPanel() {
         {loading && (
           <div className="flex justify-start">
             <div className="rounded-2xl rounded-bl-sm border border-line bg-canvas px-4 py-3 text-sm text-fg-subtle">
-              Searching the corpus…
+              Searching the feelings table…
             </div>
           </div>
         )}

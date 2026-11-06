@@ -1,0 +1,42 @@
+# Large external datasets (do not redistribute)
+data/external/
+data/reviews.jsonl
+
+# Labelling batches: these embed aclImdb review text, so they are not ours to
+# redistribute. Regenerate them with scripts/05_sample_for_labeling.py - the
+# seed is fixed, so everyone gets the same sample. The labels themselves go
+# into Supabase, not git.
+data/labeling/batch_*.csv
+data/labeling/*.docx
+!data/labeling/manifest.json
+
+# The split files carry the full aclImdb review text (~5 MB), which is not ours
+# to redistribute. The labels themselves are, so scripts/08_export_labels.py
+# writes text-free copies to data/labels/ and those are committed instead.
+data/learning.csv
+data/checking.csv
+data/exam.csv
+
+# The training JSONL carries the full review text (same reason as
+# reviews.jsonl). Regenerate with scripts/09_build_training_data.py.
+# meta.json is the exception and IS committed: it holds the 28-feeling order
+# that training, scoring and the database all have to agree on, plus the
+# per-feeling positive counts the trainer weights its loss with. No review
+# text, 1.6 KB, and eval/score.py cannot run without it - ignoring it left
+# the scorer broken on a fresh clone. The dir/* form matters here, because
+# git will not look inside an excluded directory to find a negation.
+data/training/*
+!data/training/meta.json
+
+# Trained weights, about 330 MB. The notebook saves them to Google Drive; this
+# is where they land if it runs outside Colab.
+models/
+
+# Raw LLM replies. They quote reviews, so they are not ours to redistribute.
+# The labels from them are in eval/preds/, and are committed.
+eval/llm_raw/
+
+# Per-review and per-film model scores from scripts/12_score_reviews.py
+# (~10 MB per model version). They live in Supabase (film_feelings) and in
+# Google Drive; regenerate them by running the script again.
+data/feelings/
