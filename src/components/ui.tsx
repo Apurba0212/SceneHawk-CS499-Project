@@ -1,39 +1,92 @@
 import Link from "next/link";
 
-// Shared UI primitives. Pages compose these instead of re-typing class
-// strings, so the look stays consistent. Rules: .claude/skills/scenehawk-design
+// Shared UI primitives in the CoDeed house style. Pages compose these instead
+// of re-typing class strings. Rules: .claude/skills/scenehawk-design
 
 type Children = { children: React.ReactNode };
 
-const cx = (...c: (string | false | null | undefined)[]) =>
+export const cx = (...c: (string | false | null | undefined)[]) =>
   c.filter(Boolean).join(" ");
+
+/* ─── Layout ──────────────────────────────────────────────── */
+
+/** The page column: 1180px wide with fluid side gutters. */
+export const containerClass =
+  "mx-auto w-full max-w-[1180px] px-[clamp(20px,5vw,64px)]";
+
+export function Container({
+  children,
+  className,
+}: Children & { className?: string }) {
+  return <div className={cx(containerClass, className)}>{children}</div>;
+}
+
+/** A full-width section with a hairline on top; `soft` gives the darker band. */
+export function Band({
+  children,
+  soft,
+  id,
+  className,
+  innerClassName,
+}: Children & {
+  soft?: boolean;
+  id?: string;
+  className?: string;
+  innerClassName?: string;
+}) {
+  return (
+    <section
+      id={id}
+      className={cx("border-t border-line", soft && "bg-surface", className)}
+    >
+      <Container className={cx("py-[clamp(56px,9vh,110px)]", innerClassName)}>
+        {children}
+      </Container>
+    </section>
+  );
+}
+
+/* ─── Brand ───────────────────────────────────────────────── */
+
+export function Wordmark({ size = "text-[22px]" }: { size?: string }) {
+  return (
+    <span
+      translate="no"
+      className={cx("font-display font-semibold tracking-[-0.02em] text-fg", size)}
+    >
+      Scene<span className="text-accent">Hawk</span>
+    </span>
+  );
+}
 
 /* ─── Buttons ─────────────────────────────────────────────── */
 
 export function buttonClass(
-  variant: "primary" | "secondary" | "ghost" = "primary",
+  variant: "primary" | "secondary" | "light" | "ghost" = "primary",
   size: "md" | "lg" = "md",
 ) {
   return cx(
-    "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(.2,.8,.2,1)] hover:-translate-y-px active:translate-y-px active:scale-[.985] disabled:pointer-events-none disabled:opacity-50",
-    size === "lg" ? "px-6 py-3.5 text-[15px]" : "px-5 py-2.5 text-sm",
-    variant === "primary" && "bg-accent text-canvas hover:bg-accent-hi",
+    "inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-[0.01em] transition-[color,background-color,border-color] duration-150 disabled:pointer-events-none disabled:opacity-50",
+    size === "lg" ? "px-6 py-[13px] text-[15px]" : "px-[18px] py-[9px] text-sm",
+    variant === "primary" && "bg-accent text-fg hover:bg-accent-hi",
     variant === "secondary" &&
       "border border-line-strong text-fg hover:border-fg-faint hover:bg-surface-2",
+    variant === "light" && "bg-fg text-canvas hover:bg-fg-muted",
     variant === "ghost" && "text-fg-muted hover:text-fg",
   );
 }
 
 export const inputClass =
-  "w-full rounded-lg border border-line bg-surface px-4 py-3 text-sm text-fg placeholder:text-fg-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
+  "w-full rounded-xl border border-line-strong bg-canvas px-4 py-3 text-[15px] text-fg placeholder:text-fg-faint transition-colors focus:border-accent focus:outline-none";
 
 /* ─── Type ────────────────────────────────────────────────── */
 
+/** Mono, uppercase, accent: the label above a hero or page title. */
 export function Eyebrow({ children, className }: Children & { className?: string }) {
   return (
     <p
       className={cx(
-        "text-sm font-medium text-accent",
+        "font-mono text-xs uppercase tracking-[0.14em] text-accent",
         className,
       )}
     >
@@ -42,12 +95,12 @@ export function Eyebrow({ children, className }: Children & { className?: string
   );
 }
 
-/** Small uppercase label above a list or block. */
+/** Mono, uppercase, faint: small labels beside headings and above lists. */
 export function Label({ children, className }: Children & { className?: string }) {
   return (
     <p
       className={cx(
-        "text-sm font-medium text-fg-subtle",
+        "font-mono text-xs uppercase tracking-[0.08em] text-fg-faint",
         className,
       )}
     >
@@ -72,18 +125,18 @@ export function PageHeader({
   return (
     <header
       className={cx(
-        "pb-10 pt-12 md:pt-16",
+        "pb-10 pt-[clamp(40px,7vh,72px)]",
         center && "mx-auto max-w-2xl text-center",
       )}
     >
       {eyebrow && <Eyebrow className="mb-3">{eyebrow}</Eyebrow>}
-      <h1 className="text-balance font-display text-4xl leading-[1.1] tracking-tight md:text-5xl">
+      <h1 className="font-display text-[clamp(30px,4.4vw,48px)] leading-[1.05] tracking-[-0.02em]">
         {title}
       </h1>
       {lead && (
         <p
           className={cx(
-            "mt-4 max-w-xl text-pretty text-[15px] leading-relaxed text-fg-subtle",
+            "mt-4 max-w-[62ch] text-[15px] leading-relaxed text-fg-muted",
             center && "mx-auto",
           )}
         >
@@ -95,27 +148,48 @@ export function PageHeader({
   );
 }
 
-/** The one italic-accent word in a display heading (use sparingly). */
+/** A section heading in the house serif. */
+export function SectionTitle({
+  children,
+  className,
+  as: As = "h2",
+}: Children & { className?: string; as?: "h2" | "h3" }) {
+  return (
+    <As
+      className={cx(
+        "font-display text-[clamp(26px,3.6vw,38px)] leading-[1.1] tracking-[-0.01em]",
+        className,
+      )}
+    >
+      {children}
+    </As>
+  );
+}
+
+/** The one accent word in a display heading. Italic, as in "feel." */
 export function Em({ children }: Children) {
   return <em className="text-accent">{children}</em>;
 }
 
 /* ─── Containers ──────────────────────────────────────────── */
 
-const cardBase = "rounded-xl border border-line bg-surface";
+const cardBase = "rounded-[14px] border border-line";
 
 export function Card({
   children,
   className,
   href,
-}: Children & { className?: string; href?: string }) {
+  tone = "surface",
+}: Children & { className?: string; href?: string; tone?: "surface" | "canvas" }) {
+  const bg = tone === "canvas" ? "bg-canvas" : "bg-surface";
   if (href) {
     return (
       <Link
         href={href}
         className={cx(
           cardBase,
-          "group block transition-[border-color,background-color,transform,box-shadow] duration-200 ease-[cubic-bezier(.2,.8,.2,1)] hover:-translate-y-0.5 hover:border-line-strong hover:bg-surface-2 hover:shadow-[0_12px_24px_-12px_rgb(0_0_0/0.5)]",
+          bg,
+          "group block transition-[border-color,background-color] duration-200 hover:border-line-strong hover:bg-surface-2",
           className,
         )}
       >
@@ -123,12 +197,12 @@ export function Card({
       </Link>
     );
   }
-  return <div className={cx(cardBase, className)}>{children}</div>;
+  return <div className={cx(cardBase, bg, className)}>{children}</div>;
 }
 
 export function Notice({ children }: Children) {
   return (
-    <p className="rounded-lg border border-warn-line bg-warn-bg px-4 py-3 text-xs leading-relaxed text-warn">
+    <p className="rounded-xl border border-warn-line bg-warn-bg px-4 py-3 text-xs leading-relaxed text-warn">
       {children}
     </p>
   );
@@ -144,9 +218,10 @@ export function Tag({
   return (
     <span
       className={cx(
-        "inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] leading-5",
-        tone === "default" && "border-line-strong/70 bg-surface-2 text-fg-muted",
-        tone === "accent" && "border-accent/30 bg-accent-soft text-accent",
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs leading-5",
+        tone === "default" && "border-line-strong text-fg-muted",
+        tone === "accent" &&
+          "border-accent font-mono text-[11px] uppercase tracking-[0.08em] text-accent",
         tone === "warn" && "border-warn-line bg-warn-bg text-warn",
         className,
       )}
@@ -156,33 +231,23 @@ export function Tag({
   );
 }
 
-/** Clickable pill — starter prompts, collection items, system toggles. */
+/** Clickable pill: starter prompts, collection items, system toggles. */
 export function pillClass(active = false) {
   return cx(
-    "inline-flex items-center rounded-full border px-4 py-2 text-xs transition-[color,border-color,transform] duration-150",
+    "inline-flex items-center rounded-full border px-4 py-2 text-[13px] transition-[color,border-color,background-color] duration-150",
     active
-      ? "border-accent bg-accent-soft text-accent"
-      : "border-line bg-surface text-fg-muted hover:-translate-y-px hover:border-line-strong hover:text-fg",
+      ? "border-accent text-accent"
+      : "border-line-strong text-fg-muted hover:border-fg-faint hover:text-fg",
   );
 }
 
 export function Arrow() {
   return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
+    <span
       aria-hidden
-      className="shrink-0 transition-transform duration-150 group-hover:translate-x-[3px]"
+      className="inline-block transition-transform duration-150 group-hover:translate-x-[3px]"
     >
-      <path
-        d="M3 8h10m-4-4 4 4-4 4"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+      →
+    </span>
   );
 }

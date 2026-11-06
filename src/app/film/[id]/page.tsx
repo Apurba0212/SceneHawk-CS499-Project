@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AskBox from "@/components/AskBox";
-import { Arrow, Card, Eyebrow, Tag } from "@/components/ui";
+import { Arrow, Card, Container, Eyebrow, Tag } from "@/components/ui";
 import { getFilmRepository } from "@/lib/data";
 import { exploreConnections } from "@/lib/explore";
 
@@ -55,7 +55,7 @@ export default async function FilmPage({
   const connections = exploreConnections(film, catalog);
 
   return (
-    <div className="pt-8 md:pt-10">
+    <Container className="pb-24 pt-8 md:pt-10">
       <Link
         href="/catalog"
         className="inline-flex items-center gap-1.5 text-xs text-fg-subtle transition-colors hover:text-fg"
@@ -184,6 +184,6 @@ export default async function FilmPage({
         <h2 className="mb-4 font-display text-2xl">Questions about {m.title}</h2>
         <AskBox filmId={film.id} />
       </section>
-    </div>
+    </Container>
   );
 }

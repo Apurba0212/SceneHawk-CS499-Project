@@ -22,7 +22,7 @@ interface RetrievedFilm {
 function FilmResult({ f }: { f: RetrievedFilm }) {
   const feelings = Object.entries(f.feelings ?? {}).sort((a, b) => b[1] - a[1]);
   return (
-    <li className="rounded-lg border border-line bg-canvas p-3">
+    <li className="rounded-[14px] border border-line bg-canvas p-4">
       <div className="flex items-start justify-between gap-3">
         <p className="min-w-0 break-words text-sm font-medium text-fg">
           {f.title}
@@ -30,7 +30,7 @@ function FilmResult({ f }: { f: RetrievedFilm }) {
         </p>
         {typeof f.similarity === "number" && (
           <span
-            className="shrink-0 text-xs tabular-nums text-accent"
+            className="shrink-0 font-mono text-xs tabular-nums text-accent"
             title="Retrieval score: how well the film's feeling and description scores fit your request. Not a quality rating."
           >
             match {Math.round(f.similarity * 100)}
@@ -42,14 +42,14 @@ function FilmResult({ f }: { f: RetrievedFilm }) {
           {feelings.map(([name, score]) => (
             <span
               key={name}
-              className="rounded-md border border-line-strong/70 bg-surface-2 px-2 py-0.5 text-[11px] leading-5 text-fg-muted"
+              className="rounded-full border border-line-strong px-2.5 py-0.5 text-xs leading-5 text-fg-muted"
             >
               {name} <span className="tabular-nums text-fg-faint">{score.toFixed(2)}</span>
             </span>
           ))}
           {f.low_confidence && (
             <span
-              className="rounded-md border border-warn-line bg-warn-bg px-2 py-0.5 text-[11px] leading-5 text-warn"
+              className="rounded-full border border-warn-line px-2.5 py-0.5 font-mono text-[10px] uppercase leading-5 tracking-[0.08em] text-warn"
               title="Scores come from only a few reviews."
             >
               low confidence{f.review_count ? ` · ${f.review_count} reviews` : ""}
@@ -135,7 +135,7 @@ export default function ChatPanel() {
   }
 
   return (
-    <div className="rounded-xl border border-line bg-surface shadow-[0_8px_40px_-12px_rgb(0_0_0/0.6)]">
+    <div className="rounded-[14px] border border-line bg-surface">
       {/* Conversation */}
       <div
         ref={scrollRef}
@@ -167,7 +167,7 @@ export default function ChatPanel() {
         {turns.map((t, i) =>
           t.role === "user" ? (
             <div key={i} className="flex justify-end">
-              <div className="max-w-[85%] break-words rounded-2xl rounded-br-sm bg-accent px-4 py-2.5 text-sm text-canvas">
+              <div className="max-w-[85%] break-words rounded-2xl rounded-br-sm bg-accent px-4 py-2.5 text-sm text-fg">
                 {t.text}
               </div>
             </div>
