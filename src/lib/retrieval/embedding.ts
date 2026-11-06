@@ -64,8 +64,14 @@ export class EmbeddingRetriever implements Retriever {
           cached[c.id] = res.data[j].embedding;
         });
       }
-      await fs.mkdir(path.dirname(CACHE_PATH), { recursive: true });
-      await fs.writeFile(CACHE_PATH, JSON.stringify(cached));
+      // Best-effort: serverless filesystems (e.g. Vercel) are read-only
+      // outside /tmp, so a failed write just means no cache this run.
+      try {
+        await fs.mkdir(path.dirname(CACHE_PATH), { recursive: true });
+        await fs.writeFile(CACHE_PATH, JSON.stringify(cached));
+      } catch (err) {
+        console.warn("embedding cache not written:", (err as Error).message);
+      }
     }
 
     for (const c of this.chunks) c.embedding = cached[c.id];

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Arrow, Card, Em, PageHeader } from "@/components/ui";
+import { Arrow, Card, Container, Em, PageHeader } from "@/components/ui";
 import { getFilmRepository } from "@/lib/data";
 import type { Film } from "@/lib/types";
 
@@ -62,7 +62,7 @@ export default async function CollectionsPage() {
   const byId = new Map(catalog.map((f) => [f.id, f]));
 
   return (
-    <div>
+    <Container className="pb-24">
       <PageHeader
         title={
           <>
@@ -112,6 +112,6 @@ export default async function CollectionsPage() {
           );
         })}
       </div>
-    </div>
+    </Container>
   );
 }

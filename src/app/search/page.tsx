@@ -1,15 +1,7 @@
 import Link from "next/link";
 import MatchCard from "@/components/MatchCard";
 import SearchBox from "@/components/SearchBox";
-import {
-  Card,
-  Em,
-  Label,
-  Notice,
-  PageHeader,
-  Tag,
-  pillClass,
-} from "@/components/ui";
+import { Card, Container, Em, Label, Notice, PageHeader, Tag, pillClass } from "@/components/ui";
 import { getFilmRepository } from "@/lib/data";
 import { buildAgentContext, runSearch } from "@/lib/pipelines";
 import {
@@ -54,7 +46,7 @@ export default async function SearchPage({
   const i = result?.interpretation;
 
   return (
-    <div>
+    <Container className="pb-24">
       {!q ? (
         <PageHeader
           center
@@ -97,18 +89,14 @@ export default async function SearchPage({
             <Label>System</Label>
             <nav
               aria-label="Recommendation system"
-              className="flex flex-wrap gap-1 rounded-lg border border-line bg-surface p-1"
+              className="flex flex-wrap gap-1.5"
             >
               {PIPELINE_MODES.map((m) => (
                 <Link
                   key={m}
                   aria-current={m === mode ? "page" : undefined}
                   href={`/search?q=${encodeURIComponent(q)}&mode=${m}`}
-                  className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
-                    m === mode
-                      ? "bg-surface-3 text-fg"
-                      : "text-fg-subtle hover:text-fg"
-                  }`}
+                  className={pillClass(m === mode)}
                 >
                   {PIPELINE_LABELS[m]}
                 </Link>
@@ -123,7 +111,7 @@ export default async function SearchPage({
           )}
 
           {i && (i.source === "llm" || mode === "multi" || mode === "rag") && (
-            <div className="mt-6 rounded-xl border border-line bg-surface/60 p-4">
+            <div className="mt-6 rounded-[14px] border border-line bg-surface p-5">
               <Label className="mb-3">Interpreted as · {i.source}</Label>
               <div className="flex flex-wrap gap-1.5">
                 <Chip label="themes" values={i.themes} />
@@ -158,6 +146,6 @@ export default async function SearchPage({
           </div>
         </div>
       )}
-    </div>
+    </Container>
   );
 }

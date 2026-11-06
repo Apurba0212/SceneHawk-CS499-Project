@@ -41,7 +41,7 @@ export default function AskBox({ filmId }: { filmId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-5 sm:p-6">
+    <div className="rounded-[14px] border border-line bg-surface p-5 sm:p-6">
       <form onSubmit={ask} className="flex flex-col gap-3 sm:flex-row">
         <label htmlFor={`ask-${filmId}`} className="sr-only">
           Your question about this film
